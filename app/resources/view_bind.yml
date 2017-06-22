@@ -1,6 +1,0 @@
-/app/apps:
-  service:
-    url: /api/apps
-    queries:
-      - key: pageNo
-      - key: size
