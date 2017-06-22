@@ -5,7 +5,7 @@ const apiRouter = (opts) => {
     const url = ctx.url
     if(url.startsWith('/api/')) {
       try {
-        const response = await apiFetch.fetchApi(ctx)
+        const response = await apiFetch.fetchApi(ctx, opts)
         if(response.status === 200) {
           console.log(`${ctx.request.method} ${url}, httpStatus: ${response.status}, response[ ${JSON.stringify(response.body)} ]`)
           ctx.response.body = response.body

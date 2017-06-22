@@ -1,20 +1,18 @@
-const config = require('../config.js')
-
-const fetchApi = async (ctx) => {
+const fetchApi = async (ctx, opts) => {
   const url = ctx.url
   const method = ctx.request.method
   let sreq
   if(method === "GET") {
-    sreq = fetchGet(url)
+    sreq = fetchGet(url, opts)
   }
   if(method === "POST") {
-    sreq = fetchPost(ctx, url)
+    sreq = fetchPost(ctx, url, opts)
   }
   if(method === 'PUT') {
-    sreq = fetchPut(ctx, url)
+    sreq = fetchPut(ctx, url, opts)
   }
   if(method === 'DELETE') {
-    sreq = fetchDelete(ctx, url)
+    sreq = fetchDelete(ctx, url, opts)
   }
   
   let response = {}
@@ -29,62 +27,62 @@ const fetchApi = async (ctx) => {
   return response
 }
 
-const fetchGet = (url) => {
+const fetchGet = (url, opts) => {
   const superagent = require('superagent')
-  console.log(`GET ${url}, route[ ${config.backendUrl}${url} ]`)
-  return superagent.get(`${config.backendUrl}${url}`)
+  console.log(`GET ${url}, route[ ${opts.backendUrl}${url} ]`)
+  return superagent.get(`${opts.backendUrl}${url}`)
 }
 
-const fetchPost = (ctx, url) => {
-  const superagent = require('superagent')
-  const request = ctx.request
-  const contentType = request.headers.contenttype
-  let sreq
-
-  if(contentType === "application/json") {
-    console.log(`POST ${url}, route[ ${config.backendUrl}${url} ], data[ ${JSON.stringify(request.body)} ]`)
-    sreq = superagent.post(`${config.backendUrl}${url}`)
-    .set('Content-Type', 'application/json')
-    .send(JSON.stringify(request.body))
-  } else {
-    // todo
-    console.log(`POST ${url}, route[ ${config.backendUrl}${url} ], data[ ${JSON.stringify(request.body)} ]`)
-    sreq = superagent.post(`${config.backendUrl}${url}`)
-    .send(JSON.stringify(request.body))
-  }
-
-  return sreq
-}
-
-const fetchPut = (ctx, url) => {
+const fetchPost = (ctx, url, opts) => {
   const superagent = require('superagent')
   const request = ctx.request
   const contentType = request.headers.contenttype
   let sreq
 
   if(contentType === "application/json") {
-    console.log(`PUT ${url}, route[ ${config.backendUrl}${url} ], data[ ${JSON.stringify(request.body)} ]`)
-    sreq = superagent.put(`${config.backendUrl}${url}`)
+    console.log(`POST ${url}, route[ ${opts.backendUrl}${url} ], data[ ${JSON.stringify(request.body)} ]`)
+    sreq = superagent.post(`${opts.backendUrl}${url}`)
     .set('Content-Type', 'application/json')
     .send(JSON.stringify(request.body))
   } else {
     // todo
-    console.log(`PUT ${url}, route[ ${config.backendUrl}${url} ], data[ ${JSON.stringify(request.body)} ]`)
-    sreq = superagent.put(`${config.backendUrl}${url}`)
+    console.log(`POST ${url}, route[ ${opts.backendUrl}${url} ], data[ ${JSON.stringify(request.body)} ]`)
+    sreq = superagent.post(`${opts.backendUrl}${url}`)
     .send(JSON.stringify(request.body))
   }
 
   return sreq
 }
 
-const fetchDelete = (ctx, url) => {
+const fetchPut = (ctx, url, opts) => {
   const superagent = require('superagent')
-  console.log(`DELETE ${url}, route[ ${config.backendUrl}${url} ]`)
-  return superagent.delete(`${config.backendUrl}${url}`)
+  const request = ctx.request
+  const contentType = request.headers.contenttype
+  let sreq
+
+  if(contentType === "application/json") {
+    console.log(`PUT ${url}, route[ ${opts.backendUrl}${url} ], data[ ${JSON.stringify(request.body)} ]`)
+    sreq = superagent.put(`${opts.backendUrl}${url}`)
+    .set('Content-Type', 'application/json')
+    .send(JSON.stringify(request.body))
+  } else {
+    // todo
+    console.log(`PUT ${url}, route[ ${opts.backendUrl}${url} ], data[ ${JSON.stringify(request.body)} ]`)
+    sreq = superagent.put(`${opts.backendUrl}${url}`)
+    .send(JSON.stringify(request.body))
+  }
+
+  return sreq
 }
 
-const sendGet = async (url) => {
-  const sreq = fetchGet(url)
+const fetchDelete = (ctx, url, opts) => {
+  const superagent = require('superagent')
+  console.log(`DELETE ${url}, route[ ${opts.backendUrl}${url} ]`)
+  return superagent.delete(`${opts.backendUrl}${url}`)
+}
+
+const sendGet = async (url, opts) => {
+  const sreq = fetchGet(url, opts)
   let response = {}
   await sreq.then((res) => {
     response.body = res.body

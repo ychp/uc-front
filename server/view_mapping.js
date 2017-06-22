@@ -16,31 +16,31 @@ const getAllView = (dirname, views) => {
   }
 }
 
-const factoryFunc = (view, services) => {
+const factoryFunc = (view, services, opts) => {
   return async (ctx, next) => {
-    const model = await fetchApi(ctx, services)
+    const model = await fetchApi(ctx, services, opts)
     ctx.type = 'text/html'
     ctx.render(view, model)
   }
 }
 
-const fetchApi = async (ctx, services) => {
+const fetchApi = async (ctx, services, opts) => {
   let model = {}
   const query = ctx.query 
   if(services !== undefined) {
     if(services.length === 1) {
-      model["_DATA_"] = await fetchService(services[0], query)
+      model["_DATA_"] = await fetchService(services[0], query, opts)
     }
     for(let service of services) {
-      model[service.key] = await fetchService(service, query)
+      model[service.key] = await fetchService(service, query, opts)
     }
   }
   return model
 }
 
-const fetchService = async (service, query) => {
+const fetchService = async (service, query, opts) => {
   const url = getUrl(service, query)
-  const response = await apiFetch.sendGet(url)
+  const response = await apiFetch.sendGet(url, opts)
   if(response.status === 200) {
     console.log(`GET ${url}, httpStatus: ${response.status}, response[ ${JSON.stringify(response.body)} ]`)
     return response.body
@@ -62,7 +62,7 @@ const getUrl = (service, query) => {
   return url.substring(0, url.length - 1)
 }
 
-const addControllers = (router, dirname, viewBinddings) => {
+const addControllers = (router, dirname, viewBinddings, opts) => {
   console.log(`=========================`)
   console.log(`======== views ==========`)
   const views = []
@@ -72,7 +72,7 @@ const addControllers = (router, dirname, viewBinddings) => {
     let url = view.replace(dirname, '').replace('.html', '')
     console.log(`register view [${url}]`)
     const services = getBindding(viewBinddings, url)
-    router.get(url, factoryFunc(view, services))
+    router.get(url, factoryFunc(view, services, opts))
   }
   console.log(`=========================`)
   return router.routes()
@@ -80,11 +80,10 @@ const addControllers = (router, dirname, viewBinddings) => {
 
 const getBindding = (binddings, url) => {
   const bindding = binddings[url]
-  if(bindding === undefined) {
-    return []
-  }
-
   const services = []
+  if(bindding === undefined) {
+    return services
+  }
   if(bindding.service !== undefined) {
     services.push(bindding.service) 
   }
@@ -94,9 +93,9 @@ const getBindding = (binddings, url) => {
   return services
 }
 
-module.exports = (dirname, viewBinddings) => {
+module.exports = (dirname, viewBinddings, opts) => {
   const controllerDir = dirname || './controller'
   // 使用koa-router 定义每个url所需要做的事
   const router = require('koa-router')()
-  return addControllers(router, controllerDir, viewBinddings)
+  return addControllers(router, controllerDir, viewBinddings, opts)
 }

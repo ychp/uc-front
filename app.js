@@ -1,12 +1,13 @@
+// 读取配置
+const configs = require('./config.js')
+const opts = configs()
+
 const Koa = require('koa')
 const app = new Koa()
 
 // 设置POST body解析
 const bodyParser = require('koa-bodyparser')
 app.use(bodyParser())
-
-// 读取配置
-const opts = require('./config.js')
 
 // 配置页面渲染
 const render = require('./server/render.js')
@@ -32,7 +33,7 @@ const viewBinddings = require('./server/view_bind.js')
 
 // 注入页面请求
 const viewMappings = require('./server/view_mapping.js')
-app.use(viewMappings(`${__dirname}/app/views`, viewBinddings(`${__dirname}/app/resources`)))
+app.use(viewMappings(`${__dirname}/app/views`, viewBinddings(`${__dirname}/app/resources`), opts))
 
 // 启动
 app.listen(opts.server.port, () => {
