@@ -7,6 +7,7 @@ module.exports = {
     sourceType: 'module'
   },
   env: {
+    es6: true,
     browser: true,
   },
   extends: 'airbnb-base',
@@ -34,6 +35,11 @@ module.exports = {
       'optionalDependencies': ['test/unit/index.js']
     }],
     // allow debugger during development
-    'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0
+    'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
+    'no-console': 0,
+    'strict': 2,
+    'comma-dangle': 0,
+    'object-shorthand': 0,
+    'func-names': 0,
   }
 }
