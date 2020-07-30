@@ -23,7 +23,7 @@
     "nunjucks": "2.4.3",
     "mime": "1.3.4",
     "mz": "2.4.0",
-    "superagent": "3.5.2",
+    "superagent": "3.7.0",
     "js-yaml": "3.8.4"
   },
   "devDependencies": {
